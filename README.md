@@ -27,10 +27,10 @@ See also https://en.wikipedia.org/wiki/Sudoku
 ![Sudoku Example](/Example.png)
 
 
-## Hint for field content
+## Hint for field visualzation
+* (3..9): Number of selectable digits;
+* {Digit1, Digit2}: If only two digits can be selected, these are displayed directly as a set;
 * Field with back color __white__: Entered digit;
 * Field with back color __green__: Calculated digit;
 * Field with back color __red__: Selected field in order to choose a digit;
-* Field with back color __pink__: Rule conflict;
-* (3..9): Number of selectable digits;
-* {Digit1, Digit2}: If only two digits can be selected, these are displayed directly as a set.
+* Field with back color __pink__: Role conflict in the horizontal line, the vertical line or within the 3x3 box.
