@@ -1,4 +1,4 @@
-# Sudoku Solver as Firemonkey Education Application
+# Sudoku Solver as Firemonkey Cross-Platform Application
 
 
 ## Introduction 
