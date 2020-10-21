@@ -2,7 +2,7 @@
 
 
 ## Introduction 
-This is an education Delphi project prepared for Delphi 10.3 Rio.
+This is an education Delphi project prepared for Delphi 10.3 Rio. This application is prepared to run on Windows 32/64, and on MacOS 64, and on Android and on iOS devices. 
 
 Thanks to the integrated half-solver, all 3 rules are checked continuously during input and only those digits are automatically available that do not cause rule conflicts.
 
