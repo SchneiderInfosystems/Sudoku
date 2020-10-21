@@ -1,6 +1,12 @@
 # Sudoku Solver as Firemonkey Education Application
 
+
+## Introduction 
 This is an education Delphi project prepared for Delphi 10.3 Rio.
+
+Thanks to the integrated half-solver, all 3 rules are checked continuously during input and only those digits are automatically available that do not cause rule conflicts.
+
+There are plans to add a full solver based on a backtracking algorithm to this application to explain the simplicity of the algorithm to the students.
 
 ## Precondition
 
