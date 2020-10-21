@@ -5,9 +5,10 @@ This is an education Delphi project prepared for Delphi 10.3 Rio.
 ## Precondition
 
 1. You can start with the Community Edition of Delphi. 
-https://www.embarcadero.com/products/delphi/starter/free-download 
+See also https://www.embarcadero.com/products/delphi/starter/free-download 
 
 2. You should be familiar with the rules of the math game sudoku.
+See also https://en.wikipedia.org/wiki/Sudoku
 
 ## Getting started
 1. Clone this repo;
@@ -17,7 +18,8 @@ https://www.embarcadero.com/products/delphi/starter/free-download
 
 ![Sudoku Example](/Example.png)
 
-##Hint for field content:
+
+## Hint for field content
 * Field with back color __white__: Entered digit;
 * Field with back color __green__: Calculated digit;
 * Field with back color __red__: Selected field in order to choose a digit;
