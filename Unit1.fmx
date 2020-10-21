@@ -1,0 +1,236 @@
+object fmxMain: TfmxMain
+  Left = 0
+  Top = 0
+  Caption = 'Sudoku Solver'
+  ClientHeight = 530
+  ClientWidth = 480
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object ScaledLayout: TScaledLayout
+    Align = Client
+    OriginalWidth = 450.000000000000000000
+    OriginalHeight = 450.000000000000000000
+    Margins.Left = 15.000000000000000000
+    Margins.Top = 15.000000000000000000
+    Margins.Right = 15.000000000000000000
+    Margins.Bottom = 15.000000000000000000
+    Size.Width = 450.000000000000000000
+    Size.Height = 450.000000000000000000
+    Size.PlatformDefault = False
+    object PaintBox: TPaintBox
+      Align = Client
+      Size.Width = 450.000000000000000000
+      Size.Height = 450.000000000000000000
+      Size.PlatformDefault = False
+      OnMouseDown = PaintBoxMouseDown
+      OnPaint = PaintBoxPaint
+    end
+    object Popup: TPopup
+      Opacity = 0.750000000000000000
+      Placement = Absolute
+      PlacementTarget = ScaledLayout
+      Position.X = 64.000000000000000000
+      Position.Y = 64.000000000000000000
+      Size.Width = 150.000000000000000000
+      Size.Height = 150.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object CalloutPanel1: TCalloutPanel
+        Align = Client
+        Padding.Top = 11.000000000000000000
+        Size.Width = 150.000000000000000000
+        Size.Height = 150.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        OnClick = CalloutPanel1Click
+        CalloutWidth = 23.000000000000000000
+        CalloutLength = 11.000000000000000000
+        object Button1: TButton
+          Tag = 1
+          Default = True
+          Position.X = 8.000000000000000000
+          Position.Y = 24.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 9
+          Text = '1'
+          OnClick = ButtonClick
+        end
+        object Button2: TButton
+          Tag = 2
+          Default = True
+          Position.X = 54.000000000000000000
+          Position.Y = 24.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 7
+          Text = '2'
+          OnClick = ButtonClick
+        end
+        object Button3: TButton
+          Tag = 3
+          Default = True
+          Position.X = 100.000000000000000000
+          Position.Y = 24.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 6
+          Text = '3'
+          OnClick = ButtonClick
+        end
+        object Button4: TButton
+          Tag = 4
+          Default = True
+          Position.X = 8.000000000000000000
+          Position.Y = 56.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 8
+          Text = '4'
+          OnClick = ButtonClick
+        end
+        object Button6: TButton
+          Tag = 6
+          Default = True
+          Position.X = 100.000000000000000000
+          Position.Y = 56.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          Text = '6'
+          OnClick = ButtonClick
+        end
+        object Button5: TButton
+          Tag = 5
+          Default = True
+          Position.X = 54.000000000000000000
+          Position.Y = 56.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 3
+          Text = '5'
+          OnClick = ButtonClick
+        end
+        object Button7: TButton
+          Tag = 7
+          Default = True
+          Position.X = 8.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 5
+          Text = '7'
+          OnClick = ButtonClick
+        end
+        object Button9: TButton
+          Tag = 9
+          Default = True
+          Position.X = 100.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = '9'
+          OnClick = ButtonClick
+        end
+        object Button8: TButton
+          Tag = 8
+          Default = True
+          Position.X = 54.000000000000000000
+          Position.Y = 88.000000000000000000
+          Size.Width = 41.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Text = '8'
+          OnClick = ButtonClick
+        end
+        object btnClear: TButton
+          Tag = 7
+          StaysPressed = True
+          Default = True
+          Position.X = 84.000000000000000000
+          Position.Y = 120.000000000000000000
+          Size.Width = 57.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 4
+          Text = 'Clear'
+          OnClick = btnClearClick
+        end
+      end
+    end
+  end
+  object pnlToolbar: TPanel
+    Align = Top
+    Size.Width = 480.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object btnSave: TButton
+      Position.X = 88.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Save'
+      OnClick = btnSaveClick
+    end
+    object btnLoad: TButton
+      Position.X = 160.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Load'
+      OnClick = btnLoadClick
+    end
+    object btnInit: TButton
+      Position.X = 16.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Init'
+      OnClick = btnInitClick
+    end
+    object btnUndo: TButton
+      Enabled = False
+      Position.X = 232.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Undo'
+      OnClick = btnUndoClick
+    end
+  end
+  object OpenDialog: TOpenDialog
+    DefaultExt = '.txt'
+    Filter = '*.txt|*.txt'
+    Left = 40
+    Top = 80
+  end
+  object SaveDialog: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = '*.txt|*.txt'
+    Left = 120
+    Top = 80
+  end
+end
