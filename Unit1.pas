@@ -3,15 +3,16 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
-  System.Generics.Collections,
+  System.SysUtils, System.Types, System.UITypes, System.Classes,
+  System.Variants, System.Generics.Collections,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Layouts, FMX.Menus;
 
 type
-  TValue = 1..9;
-  TValueWithFinale = 0..9;
+  TValue = 1 .. 9;
+  TValueWithFinale = 0 .. 9;
   TValSet = set of TValue;
+
   TNumber = record
     ValSet, CalcSet: TValSet;
     Finale, Back: TValueWithFinale;
@@ -27,7 +28,8 @@ type
     function GetCount: integer;
     function GetAsStr: string;
   end;
-  TNumbers = array [0..8, 0..8] of TNumber;
+
+  TNumbers = array [0 .. 8, 0 .. 8] of TNumber;
 
   TfmxMain = class(TForm)
     PaintBox: TPaintBox;
@@ -66,7 +68,7 @@ type
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
-    fButton: array [1..9] of TButton;
+    fButton: array [1 .. 9] of TButton;
     fStack: TStack<TNumbers>;
     procedure CalcVertical;
     procedure CalcHorizontal;
@@ -112,15 +114,16 @@ end;
 
 procedure TfmxMain.Init;
 var
-  x, y: integer;
+  X, Y: integer;
 begin
   fSelectedBox := Point(-1, -1);
-  for x := 0 to 8 do
-    for y := 0 to 8 do
-      fNumbers[x, y].Init;
+  for X := 0 to 8 do
+    for Y := 0 to 8 do
+      fNumbers[X, Y].Init;
 end;
 
 {$REGION 'Popup Panel'}
+
 procedure TfmxMain.PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Single);
 var
@@ -130,11 +133,11 @@ begin
   fSelectedBox.X := trunc(X / 50);
   fSelectedBox.Y := trunc(Y / 50);
   PaintBox.Repaint;
-  p := ClientToScreen(pointF(
-    (fSelectedBox.X - 0.75) * 50 * ScaledLayout.Width / ScaledLayout.OriginalWidth,
-    (fSelectedBox.Y + 1.2) * 50 * ScaledLayout.height / ScaledLayout.OriginalHeight));
+  p := ClientToScreen(pointF((fSelectedBox.X - 0.75) * 50 * ScaledLayout.Width /
+    ScaledLayout.OriginalWidth, (fSelectedBox.Y + 1.2) * 50 *
+    ScaledLayout.height / ScaledLayout.OriginalHeight));
   Popup.PlacementRectangle.Left := p.X;
-  Popup.PlacementRectangle.Top := p.Y + pnlToolbar.Height;
+  Popup.PlacementRectangle.Top := p.Y + pnlToolbar.height;
   for c := 1 to 9 do
     fButton[c].Visible := c in fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet;
   btnClear.SetFocus;
@@ -155,7 +158,9 @@ begin
       ShowMessage(Error);
       fNumbers[fSelectedBox.X, fSelectedBox.Y].SetVals(oldValS);
       PaintBox.Repaint;
-    end else begin
+    end
+    else
+    begin
       PaintBox.Repaint;
       Popup.IsOpen := false;
     end;
@@ -179,7 +184,9 @@ begin
       ShowMessage(Error);
       fNumbers[fSelectedBox.X, fSelectedBox.Y].SetVals(oldValS);
       PaintBox.Repaint;
-    end else begin
+    end
+    else
+    begin
       PaintBox.Repaint;
       Popup.IsOpen := false;
     end;
@@ -192,8 +199,8 @@ begin
   fSelectedBox := Point(-1, -1);
 end;
 {$ENDREGION}
-
 {$REGION 'Save/Load File'}
+
 procedure TfmxMain.btnInitClick(Sender: TObject);
 begin
   Init;
@@ -208,8 +215,10 @@ begin
   if Load then
   begin
     if OpenDialog.Execute then
-       result := OpenDialog.FileName;
-  end else begin
+      result := OpenDialog.FileName;
+  end
+  else
+  begin
     if SaveDialog.Execute then
       result := SaveDialog.FileName;
   end;
@@ -218,8 +227,10 @@ begin
   if Load then
   begin
     if OpenDialog.Execute then
-       result := OpenDialog.FileName;
-  end else begin
+      result := OpenDialog.FileName;
+  end
+  else
+  begin
     if SaveDialog.Execute then
       result := SaveDialog.FileName;
   end;
@@ -232,11 +243,10 @@ begin
 {$ENDIF}
 end;
 
-
 procedure TfmxMain.btnLoadClick(Sender: TObject);
 var
   sl: TStringList;
-  x, y, f: integer;
+  X, Y, f: integer;
   Error: string;
   fn: string;
 begin
@@ -246,21 +256,21 @@ begin
   sl := TStringList.Create;
   try
     sl.LoadFromFile(fn);
-    for x := 0 to 8 do
-      for y := 0 to 8 do
+    for X := 0 to 8 do
+      for Y := 0 to 8 do
       begin
-        f := StrToInt(sl.Values[IntToStr(x) + '.' + IntTostr(y)]);
+        f := StrToInt(sl.Values[IntToStr(X) + '.' + IntToStr(Y)]);
         if f > 0 then
-          fNumbers[x, y].SetDefFinal(f)
+          fNumbers[X, Y].SetDefFinal(f)
         else
-          fNumbers[x, y].Init;
+          fNumbers[X, Y].Init;
       end;
-      if not CalcAll(Error) then
-      begin
-        ShowMessage(Error);
-        init;
-      end;
-      PaintBox.Repaint;
+    if not CalcAll(Error) then
+    begin
+      ShowMessage(Error);
+      Init;
+    end;
+    PaintBox.Repaint;
   finally
     sl.Free;
   end;
@@ -270,7 +280,7 @@ end;
 procedure TfmxMain.btnSaveClick(Sender: TObject);
 var
   sl: TStringList;
-  x, y: integer;
+  X, Y: integer;
   fn: string;
 begin
   fn := GetFileName(false);
@@ -278,12 +288,13 @@ begin
     exit;
   sl := TStringList.Create;
   try
-    for x := 0 to 8 do
-      for y := 0 to 8 do
-        if not fNumbers[x, y].Calculated then
-          sl.AddPair(IntToStr(x) + '.' + IntTostr(y), IntToStr(fNumbers[x, y].Finale))
+    for X := 0 to 8 do
+      for Y := 0 to 8 do
+        if not fNumbers[X, Y].Calculated then
+          sl.AddPair(IntToStr(X) + '.' + IntToStr(Y),
+            IntToStr(fNumbers[X, Y].Finale))
         else
-          sl.AddPair(IntToStr(x) + '.' + IntTostr(y), IntToStr(0));
+          sl.AddPair(IntToStr(X) + '.' + IntToStr(Y), IntToStr(0));
     sl.SaveToFile(fn);
   finally
     sl.Free;
@@ -318,12 +329,11 @@ begin
   Pop;
   PaintBox.Repaint;
 end;
-
 {$ENDREGION}
 
 procedure TfmxMain.PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
 var
-  x, y: integer;
+  X, Y: integer;
   r: TRectF;
 begin
   Canvas.BeginScene;
@@ -335,48 +345,50 @@ begin
   Canvas.Stroke.Kind := TBrushKind.Solid;
   Canvas.Stroke.Thickness := 1;
 
-  for x := 0 to 8 do
-    for y := 0 to 8 do
+  for X := 0 to 8 do
+    for Y := 0 to 8 do
     begin
-      if (fSelectedBox.X = x) and (fSelectedBox.Y = y) then
+      if (fSelectedBox.X = X) and (fSelectedBox.Y = Y) then
         Canvas.Fill.Color := TAlphaColors.Red
-      else if fNumbers[x, y].IsFinale and not fNumbers[x, y].Calculated then
+      else if fNumbers[X, Y].IsFinale and not fNumbers[X, Y].Calculated then
         Canvas.Fill.Color := TAlphaColors.White
-      else if fNumbers[x, y].IsFinale and fNumbers[x, y].Calculated then
+      else if fNumbers[X, Y].IsFinale and fNumbers[X, Y].Calculated then
         Canvas.Fill.Color := TAlphaColors.Lime
-      else if not fNumbers[x, y].IsFinale and fNumbers[x, y].Calculated then
+      else if not fNumbers[X, Y].IsFinale and fNumbers[X, Y].Calculated then
         Canvas.Fill.Color := TAlphaColors.Pink
       else
         Canvas.Fill.Color := TAlphaColors.Lightblue;
 
-      r := rectF(x * 50, y * 50, (x + 1) * 50 - 1, (y + 1) * 50 - 1);
+      r := rectF(X * 50, Y * 50, (X + 1) * 50 - 1, (Y + 1) * 50 - 1);
       Canvas.FillRect(r, 0, 0, AllCorners, 1);
       Canvas.DrawRect(r, 0, 0, AllCorners, 1);
 
       Canvas.Font.Size := 20;
-      if fNumbers[x, y].IsFinale then
+      if fNumbers[X, Y].IsFinale then
       begin
         Canvas.Fill.Color := TAlphaColors.Black;
-        Canvas.FillText(r, IntToStr(fNumbers[x, y].Finale), false, 1, [],
+        Canvas.FillText(r, IntToStr(fNumbers[X, Y].Finale), false, 1, [],
           TTextAlign.Center, TTextAlign.Center);
       end
-      else if fNumbers[x, y].GetCount = 2 then
+      else if fNumbers[X, Y].GetCount = 2 then
       begin
         Canvas.Fill.Color := TAlphaColors.Black;
-        Canvas.FillText(r, '{' + fNumbers[x, y].GetAsStr + '}',
-          false, 1, [], TTextAlign.Center, TTextAlign.Center);
-      end else begin
+        Canvas.FillText(r, '{' + fNumbers[X, Y].GetAsStr + '}', false, 1, [],
+          TTextAlign.Center, TTextAlign.Center);
+      end
+      else
+      begin
         Canvas.Fill.Color := TAlphaColors.White;
-        Canvas.FillText(r, '(' + IntToStr(fNumbers[x, y].GetCount) + ')',
-          false, 1, [], TTextAlign.Center, TTextAlign.Center);
+        Canvas.FillText(r, '(' + IntToStr(fNumbers[X, Y].GetCount) + ')', false,
+          1, [], TTextAlign.Center, TTextAlign.Center);
       end;
     end;
 
   Canvas.Stroke.Thickness := 3;
-  for x := 0 to 2 do
-    for y := 0 to 2 do
+  for X := 0 to 2 do
+    for Y := 0 to 2 do
     begin
-      r := rectF(x * 150, y * 150, (x + 1) * 150 - 1, (y + 1) * 150 - 1);
+      r := rectF(X * 150, Y * 150, (X + 1) * 150 - 1, (Y + 1) * 150 - 1);
       Canvas.DrawRect(r, 0, 0, AllCorners, 1);
     end;
 
@@ -385,28 +397,29 @@ end;
 
 function TfmxMain.CalcAll(var Error: string): boolean;
 var
-  x, y: integer;
+  X, Y: integer;
   EndCalc: boolean;
 begin
   result := false;
-  for x := 0 to 8 do
-    for y := 0 to 8 do
-      fNumbers[x, y].SaveBack;
+  for X := 0 to 8 do
+    for Y := 0 to 8 do
+      fNumbers[X, Y].SaveBack;
   try
     repeat
-      for x := 0 to 8 do
-        for y := 0 to 8 do
-          fNumbers[x, y].StartCalc;
+      for X := 0 to 8 do
+        for Y := 0 to 8 do
+          fNumbers[X, Y].StartCalc;
       CalcHorizontal;
       CalcVertical;
       CalcBox;
       EndCalc := false;
-      for x := 0 to 8 do
-        for y := 0 to 8 do
-          if not fNumbers[x, y].IsFinale then
-            if fNumbers[x, y].EndCalc then
+      for X := 0 to 8 do
+        for Y := 0 to 8 do
+          if not fNumbers[X, Y].IsFinale then
+            if fNumbers[X, Y].EndCalc then
             begin
-              Log.d('End calculated of : ' + IntToStr(x + 1) + ',' + IntToStr(y + 1));
+              Log.d('End calculated of : ' + IntToStr(X + 1) + ',' +
+                IntToStr(Y + 1));
               EndCalc := true;
             end;
     until not EndCalc;
@@ -414,75 +427,78 @@ begin
   except
     on e: exception do
     begin
-      error := e.Message;
-      for x := 0 to 8 do
-        for y := 0 to 8 do
-          fNumbers[x, y].RollBack;
+      Error := e.Message;
+      for X := 0 to 8 do
+        for Y := 0 to 8 do
+          fNumbers[X, Y].RollBack;
     end;
   end;
 end;
 
 procedure TfmxMain.CalcVertical;
 var
-  x, y: integer;
+  X, Y: integer;
   ValSet: TValSet;
 begin
-  for x := 0 to 8 do
+  for X := 0 to 8 do
   begin
     ValSet := [];
-    for y := 0 to 8 do
-      if fNumbers[x, y].IsFinale then
-        if fNumbers[x, y].Finale in ValSet then
-          raise Exception.CreateFmt('Vertikale Regel in Spalte %d verletzt', [x + 1])
+    for Y := 0 to 8 do
+      if fNumbers[X, Y].IsFinale then
+        if fNumbers[X, Y].Finale in ValSet then
+          raise exception.CreateFmt
+            ('Vertical rule violated in column %d', [X + 1])
         else
-          ValSet := ValSet + [fNumbers[x, y].Finale];
-    for y := 0 to 8 do
-      if not fNumbers[x, y].IsFinale then
-        fNumbers[x, y].CalcSet := fNumbers[x, y].CalcSet - ValSet;
+          ValSet := ValSet + [fNumbers[X, Y].Finale];
+    for Y := 0 to 8 do
+      if not fNumbers[X, Y].IsFinale then
+        fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
   end;
 end;
 
 procedure TfmxMain.CalcHorizontal;
 var
-  x, y: integer;
+  X, Y: integer;
   ValSet: TValSet;
 begin
-  for y := 0 to 8 do
+  for Y := 0 to 8 do
   begin
     ValSet := [];
-    for x := 0 to 8 do
-      if fNumbers[x, y].IsFinale then
-        if fNumbers[x, y].Finale in ValSet then
-          raise Exception.CreateFmt('Horizontale Regel in Reihe %d verletzt', [y + 1])
+    for X := 0 to 8 do
+      if fNumbers[X, Y].IsFinale then
+        if fNumbers[X, Y].Finale in ValSet then
+          raise exception.CreateFmt
+            ('Horizontal rule violated in column% d', [Y + 1])
         else
-          ValSet := ValSet + [fNumbers[x, y].Finale];
-    for x := 0 to 8 do
-      if not fNumbers[x, y].IsFinale then
-        fNumbers[x, y].CalcSet := fNumbers[x, y].CalcSet - ValSet;
+          ValSet := ValSet + [fNumbers[X, Y].Finale];
+    for X := 0 to 8 do
+      if not fNumbers[X, Y].IsFinale then
+        fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
   end;
 end;
 
 procedure TfmxMain.CalcBox;
 var
   xB, yB: integer;
-  x, y: integer;
+  X, Y: integer;
   ValSet: TValSet;
 begin
   for xB := 0 to 2 do
     for yB := 0 to 2 do
     begin
       ValSet := [];
-      for x := xB * 3 to xB * 3 + 2 do
-        for y := yB * 3 to yB * 3 + 2 do
-          if fNumbers[x, y].IsFinale then
-            if fNumbers[x, y].Finale in ValSet then
-              raise Exception.CreateFmt('Regel in Box %d, %d verletzt', [xB + 1, yB + 1])
+      for X := xB * 3 to xB * 3 + 2 do
+        for Y := yB * 3 to yB * 3 + 2 do
+          if fNumbers[X, Y].IsFinale then
+            if fNumbers[X, Y].Finale in ValSet then
+              raise exception.CreateFmt('Rule violated in in box %d, %d',
+                [xB + 1, yB + 1])
             else
-              ValSet := ValSet + [fNumbers[x, y].Finale];
-      for x := xB * 3 to xB * 3 + 2 do
-        for y := yB * 3 to yB * 3 + 2 do
-          if not fNumbers[x, y].IsFinale then
-            fNumbers[x, y].CalcSet := fNumbers[x, y].CalcSet - ValSet;
+              ValSet := ValSet + [fNumbers[X, Y].Finale];
+      for X := xB * 3 to xB * 3 + 2 do
+        for Y := yB * 3 to yB * 3 + 2 do
+          if not fNumbers[X, Y].IsFinale then
+            fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
     end;
 end;
 
@@ -490,7 +506,7 @@ end;
 
 procedure TNumber.Init;
 begin
-  ValSet := [1,2,3,4,5,6,7,8,9];
+  ValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
   Finale := 0;
   Calculated := false;
 end;
@@ -507,13 +523,13 @@ var
   v: TValue;
   Count: integer;
 begin
-  ValSet := Vals;
+  ValSet := ValS;
   Count := 0;
   for v in ValSet do
   begin
     inc(Count);
     if Count = 1 then
-      Finale := V
+      Finale := v
     else
       Finale := 0;
   end;
@@ -521,7 +537,7 @@ end;
 
 procedure TNumber.StartCalc;
 begin
-  CalcSet := [1,2,3,4,5,6,7,8,9];
+  CalcSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
 end;
 
 function TNumber.EndCalc: boolean;
