@@ -21,6 +21,7 @@ type
     fFinale, fBack: TValueWithFinale;
     fCalculated: boolean;
     SolverPos: TValueWithFinale;
+    function SearchNextSolverPos: boolean;
     procedure SetValSet(Val: TValSet);
     procedure SetCalcSet(Val: TValSet);
   public
@@ -483,7 +484,7 @@ begin
       begin
         fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
         if fNumbers[X, Y].CalcSet = [] then
-          raise ERuleException.CreateFmt
+          raise ESudokuRule.CreateFmt
             ('Vertical rule violated in column% d', [X + 1]);
       end;
   end;
@@ -509,7 +510,7 @@ begin
       begin
         fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
         if fNumbers[X, Y].CalcSet = [] then
-          raise ERuleException.CreateFmt
+          raise ESudokuRule.CreateFmt
             ('Horizontal rule violated in column% d', [Y + 1]);
       end;
   end;
@@ -539,7 +540,7 @@ begin
           begin
             fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
             if fNumbers[X, Y].CalcSet = [] then
-              raise ERuleException.CreateFmt(
+              raise ESudokuRule.CreateFmt(
                 'Rule violated in in box %d, %d', [xB + 1, yB + 1]);
           end;
     end;
