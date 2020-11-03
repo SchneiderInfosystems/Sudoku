@@ -220,6 +220,13 @@ object fmxMain: TfmxMain
       Text = 'Undo'
       OnClick = btnUndoClick
     end
+    object btnSolve: TButton
+      Position.X = 352.000000000000000000
+      Position.Y = 16.000000000000000000
+      TabOrder = 5
+      Text = 'Solve'
+      OnClick = btnSolveClick
+    end
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'

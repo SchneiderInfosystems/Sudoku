@@ -9,6 +9,8 @@ uses
   FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Layouts, FMX.Menus;
 
 type
+  ERuleException = class(Exception);
+
   TValue = 1 .. 9;
   TValueWithFinale = 0 .. 9;
   TValSet = set of TValue;
@@ -17,6 +19,8 @@ type
     ValSet, CalcSet: TValSet;
     Finale, Back: TValueWithFinale;
     Calculated: boolean;
+    SolverPos: TValueWithFinale;
+    function SearchNextSolverPos: boolean;
     procedure Init;
     procedure StartCalc;
     function EndCalc: boolean;
@@ -53,6 +57,7 @@ type
     SaveDialog: TSaveDialog;
     btnInit: TButton;
     btnUndo: TButton;
+    btnSolve: TButton;
     procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FormCreate(Sender: TObject);
     procedure CalloutPanel1Click(Sender: TObject);
@@ -65,6 +70,7 @@ type
       Shift: TShiftState; X, Y: Single);
     procedure btnUndoClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnSolveClick(Sender: TObject);
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
@@ -301,6 +307,13 @@ begin
   end;
 end;
 
+procedure TfmxMain.btnSolveClick(Sender: TObject);
+begin
+  fSelectedBox.X := 3;
+  fSelectedBox.Y := 7;
+  paintBox.Repaint;
+end;
+
 procedure TfmxMain.Pop;
 begin
   fNumbers := fStack.Pop;
@@ -425,7 +438,7 @@ begin
     until not EndCalc;
     result := true;
   except
-    on e: exception do
+    on e: ERuleException do
     begin
       Error := e.Message;
       for X := 0 to 8 do
@@ -446,13 +459,18 @@ begin
     for Y := 0 to 8 do
       if fNumbers[X, Y].IsFinale then
         if fNumbers[X, Y].Finale in ValSet then
-          raise exception.CreateFmt
+          raise ERuleException.CreateFmt
             ('Vertical rule violated in column %d', [X + 1])
         else
           ValSet := ValSet + [fNumbers[X, Y].Finale];
     for Y := 0 to 8 do
       if not fNumbers[X, Y].IsFinale then
+      begin
         fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
+        if fNumbers[X, Y].CalcSet = [] then
+          raise ERuleException.CreateFmt
+            ('Vertical rule violated in column% d', [X + 1]);
+      end;
   end;
 end;
 
@@ -467,13 +485,18 @@ begin
     for X := 0 to 8 do
       if fNumbers[X, Y].IsFinale then
         if fNumbers[X, Y].Finale in ValSet then
-          raise exception.CreateFmt
+          raise ERuleException.CreateFmt
             ('Horizontal rule violated in column% d', [Y + 1])
         else
           ValSet := ValSet + [fNumbers[X, Y].Finale];
     for X := 0 to 8 do
       if not fNumbers[X, Y].IsFinale then
+      begin
         fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
+        if fNumbers[X, Y].CalcSet = [] then
+          raise ERuleException.CreateFmt
+            ('Horizontal rule violated in column% d', [Y + 1]);
+      end;
   end;
 end;
 
@@ -491,14 +514,19 @@ begin
         for Y := yB * 3 to yB * 3 + 2 do
           if fNumbers[X, Y].IsFinale then
             if fNumbers[X, Y].Finale in ValSet then
-              raise exception.CreateFmt('Rule violated in in box %d, %d',
+              raise ERuleException.CreateFmt('Rule violated in in box %d, %d',
                 [xB + 1, yB + 1])
             else
               ValSet := ValSet + [fNumbers[X, Y].Finale];
       for X := xB * 3 to xB * 3 + 2 do
         for Y := yB * 3 to yB * 3 + 2 do
           if not fNumbers[X, Y].IsFinale then
+          begin
             fNumbers[X, Y].CalcSet := fNumbers[X, Y].CalcSet - ValSet;
+            if fNumbers[X, Y].CalcSet = [] then
+              raise ERuleException.CreateFmt(
+                'Rule violated in in box %d, %d', [xB + 1, yB + 1]);
+          end;
     end;
 end;
 
@@ -506,9 +534,24 @@ end;
 
 procedure TNumber.Init;
 begin
+  SolverPos:= 0;
   ValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
   Finale := 0;
   Calculated := false;
+end;
+
+function TNumber.SearchNextSolverPos: boolean;
+var
+  c: TValueWithFinale;
+begin
+  c:= 1;
+  while (SolverPos+c in ValSet) and (SolverPos + c < 9) do
+    inc(c);
+  if SolverPos+c in ValSet then
+    Solverpos := Solverpos + c
+  else
+    Result := false;
+  Result:= true;
 end;
 
 procedure TNumber.SetDefFinal(Val: TValue);
