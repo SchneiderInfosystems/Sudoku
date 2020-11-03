@@ -9,28 +9,34 @@ uses
   FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Layouts, FMX.Menus;
 
 type
-  ERuleException = class(Exception);
+  ESudokuRule = class(Exception);
 
   TValue = 1 .. 9;
   TValueWithFinale = 0 .. 9;
   TValSet = set of TValue;
 
   TNumber = record
-    ValSet, CalcSet: TValSet;
-    Finale, Back: TValueWithFinale;
-    Calculated: boolean;
+  private
+    fValSet, fCalcSet: TValSet;
+    fFinale, fBack: TValueWithFinale;
+    fCalculated: boolean;
     SolverPos: TValueWithFinale;
-    function SearchNextSolverPos: boolean;
+    procedure SetValSet(Val: TValSet);
+    procedure SetCalcSet(Val: TValSet);
+  public
     procedure Init;
     procedure StartCalc;
     function EndCalc: boolean;
     procedure SaveBack;
     procedure RollBack;
     procedure SetDefFinal(Val: TValue);
-    procedure SetVals(ValS: TValSet);
     function IsFinale: boolean;
     function GetCount: integer;
     function GetAsStr: string;
+    property ValSet: TValSet read fValSet write SetValSet;
+    property CalcSet: TValSet read fCalcSet write SetCalcSet;
+    property Calculated: boolean read fCalculated;
+    property Finale: TValueWithFinale read fFinale;
   end;
 
   TNumbers = array [0 .. 8, 0 .. 8] of TNumber;
@@ -171,7 +177,7 @@ begin
     if not CalcAll(Error) then
     begin
       ShowMessage(Error);
-      fNumbers[fSelectedBox.X, fSelectedBox.Y].SetVals(oldValS);
+      fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet := oldValS;
       PaintBox.Repaint;
     end
     else
@@ -197,7 +203,7 @@ begin
     if not CalcAll(Error) then
     begin
       ShowMessage(Error);
-      fNumbers[fSelectedBox.X, fSelectedBox.Y].SetVals(oldValS);
+      fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet := oldValS;
       PaintBox.Repaint;
     end
     else
@@ -447,7 +453,7 @@ begin
     until not EndCalc;
     result := true;
   except
-    on e: ERuleException do
+    on e: ESudokuRule do
     begin
       Error := e.Message;
       for X := 0 to 8 do
@@ -468,7 +474,7 @@ begin
     for Y := 0 to 8 do
       if fNumbers[X, Y].IsFinale then
         if fNumbers[X, Y].Finale in ValSet then
-          raise ERuleException.CreateFmt
+          raise ESudokuRule.CreateFmt
             ('Vertical rule violated in column %d', [X + 1])
         else
           ValSet := ValSet + [fNumbers[X, Y].Finale];
@@ -494,7 +500,7 @@ begin
     for X := 0 to 8 do
       if fNumbers[X, Y].IsFinale then
         if fNumbers[X, Y].Finale in ValSet then
-          raise ERuleException.CreateFmt
+          raise ESudokuRule.CreateFmt
             ('Horizontal rule violated in column% d', [Y + 1])
         else
           ValSet := ValSet + [fNumbers[X, Y].Finale];
@@ -523,7 +529,7 @@ begin
         for Y := yB * 3 to yB * 3 + 2 do
           if fNumbers[X, Y].IsFinale then
             if fNumbers[X, Y].Finale in ValSet then
-              raise ERuleException.CreateFmt('Rule violated in in box %d, %d',
+              raise ESudokuRule.CreateFmt('Rule violated in in box %d, %d',
                 [xB + 1, yB + 1])
             else
               ValSet := ValSet + [fNumbers[X, Y].Finale];
@@ -565,31 +571,40 @@ end;
 
 procedure TNumber.SetDefFinal(Val: TValue);
 begin
-  ValSet := [Val];
-  Finale := Val;
-  Calculated := false;
+  fValSet := [Val];
+  fFinale := Val;
+  fCalculated := false;
 end;
 
-procedure TNumber.SetVals(ValS: TValSet);
+procedure TNumber.SetValSet(Val: TValSet);
 var
   v: TValue;
   Count: integer;
 begin
-  ValSet := ValS;
+  if Val = [] then
+    raise ESudokuRule.Create('Empty set violates the rules');
+  fValSet := Val;
   Count := 0;
   for v in ValSet do
   begin
     inc(Count);
     if Count = 1 then
-      Finale := v
+      fFinale := v
     else
-      Finale := 0;
+      fFinale := 0;
   end;
+end;
+
+procedure TNumber.SetCalcSet(Val: TValSet);
+begin
+  if Val = [] then
+    raise ESudokuRule.Create('Empty set violates the rules');
+  fCalcSet := Val;
 end;
 
 procedure TNumber.StartCalc;
 begin
-  CalcSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  fCalcSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
 end;
 
 function TNumber.EndCalc: boolean;
@@ -597,10 +612,10 @@ begin
   result := false;
   if not IsFinale then
   begin
-    SetVals(CalcSet);
+    SetValSet(CalcSet);
     result := IsFinale;
     if result then
-      Calculated := true;
+      fCalculated := true;
   end;
 end;
 
@@ -609,7 +624,7 @@ var
   v: TValue;
 begin
   result := '';
-  for v in ValSet do
+  for v in fValSet do
     result := result + IntToStr(v);
 end;
 
@@ -618,23 +633,23 @@ var
   v: TValue;
 begin
   result := 0;
-  for v in ValSet do
+  for v in fValSet do
     inc(result);
 end;
 
 function TNumber.IsFinale: boolean;
 begin
-  result := Finale > 0;
+  result := fFinale > 0;
 end;
 
 procedure TNumber.SaveBack;
 begin
-  Back := Finale;
+  fBack := fFinale;
 end;
 
 procedure TNumber.RollBack;
 begin
-  Finale := Back;
+  fFinale := fBack;
 end;
 
 end.
