@@ -83,6 +83,7 @@ type
     procedure Pop;
     procedure StackInit;
     function GetFileName(Load: boolean): string;
+    function NewSolverPos: TNumbers;
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
@@ -126,6 +127,14 @@ begin
   for X := 0 to 8 do
     for Y := 0 to 8 do
       fNumbers[X, Y].Init;
+end;
+
+function TfmxMain.NewSolverPos: TNumbers;
+var
+  X, Y: integer;
+begin
+    for X := 0 to 8 do
+      for Y := 0 to 8 do
 end;
 
 {$REGION 'Popup Panel'}
