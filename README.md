@@ -33,6 +33,7 @@ See also https://en.wikipedia.org/wiki/Sudoku
 10. The button __Init__ let you start a new game;
 11. The button __Save__ let you store the current matrix into a text file;
 12. With the button __Load__ you can restore the former game stage.
+13. If the half solver makes your Sudokus too easy, dare to load the ExpertExample.txt.
 
 ![Sudoku Example](/Example.png)
 
