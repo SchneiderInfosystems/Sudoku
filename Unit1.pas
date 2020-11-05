@@ -12,15 +12,15 @@ type
   ESudokuRule = class(Exception);
 
   TValue = 1 .. 9;
-  TValueWithFinale = 0 .. 9;
+  TValueWithSentinel = 0 .. 9;
   TValSet = set of TValue;
 
   TNumber = record
   private
     fValSet, fCalcSet: TValSet;
-    fFinale, fBack: TValueWithFinale;
+    fFinale, fBack: TValueWithSentinel;
     fCalculated: boolean;
-    SolverPos: TValueWithFinale;
+    fSolverPos: TValueWithSentinel;
     function SearchNextSolverPos: boolean;
     procedure SetValSet(Val: TValSet);
     procedure SetCalcSet(Val: TValSet);
@@ -31,13 +31,15 @@ type
     procedure SaveBack;
     procedure RollBack;
     procedure SetDefFinal(Val: TValue);
+    procedure TakeSolverPos;
     function IsFinale: boolean;
     function GetCount: integer;
     function GetAsStr: string;
     property ValSet: TValSet read fValSet write SetValSet;
     property CalcSet: TValSet read fCalcSet write SetCalcSet;
     property Calculated: boolean read fCalculated;
-    property Finale: TValueWithFinale read fFinale;
+    property Finale: TValueWithSentinel read fFinale;
+    property SolverPos: TValueWithSentinel read fSolverPos write fSolverPos;
   end;
 
   TNumbers = array [0 .. 8, 0 .. 8] of TNumber;
@@ -65,6 +67,9 @@ type
     btnInit: TButton;
     btnUndo: TButton;
     btnSolve: TButton;
+    tmrAutoSolver: TTimer;
+    btnAutoSolver: TButton;
+    btnStopAutoSolver: TButton;
     procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FormCreate(Sender: TObject);
     procedure CalloutPanel1Click(Sender: TObject);
@@ -78,6 +83,9 @@ type
     procedure btnUndoClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnSolveClick(Sender: TObject);
+    procedure tmrAutoSolverTimer(Sender: TObject);
+    procedure btnAutoSolverClick(Sender: TObject);
+    procedure btnStopAutoSolverClick(Sender: TObject);
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
@@ -90,7 +98,7 @@ type
     procedure Pop;
     procedure StackInit;
     function GetFileName(Load: boolean): string;
-    function NewSolverPos: TNumbers;
+    function NewSolverPos: boolean;
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
@@ -136,12 +144,30 @@ begin
       fNumbers[X, Y].Init;
 end;
 
-function TfmxMain.NewSolverPos: TNumbers;
+function TfmxMain.NewSolverPos: boolean;
 var
   X, Y: integer;
+  LastFound: TValueWithSentinel;
 begin
+  LastFound:= 0;
+  for Y := 0 to 8 do
     for X := 0 to 8 do
-      for Y := 0 to 8 do
+      begin
+        if not (fNumbers[X, Y].IsFinale) and ((LastFound = 0) or
+          (LastFound > fNumbers[X, Y].GetCount)) then
+        begin
+          fSelectedBox.X := X;
+          fSelectedBox.Y := Y;
+
+          LastFound := fNumbers[X, Y].GetCount;
+
+          if LastFound = 2 then
+            exit(true);
+        end;
+      end;
+
+  result := LastFound <> 0;
+
 end;
 
 {$REGION 'Popup Panel'}
@@ -187,6 +213,13 @@ begin
       Popup.IsOpen := false;
     end;
   end;
+end;
+
+procedure TfmxMain.btnAutoSolverClick(Sender: TObject);
+begin
+  tmrAutoSolver.Enabled := true;
+  btnAutoSolver.Visible := false;
+  btnStopAutoSolver.Visible := true;
 end;
 
 procedure TfmxMain.ButtonClick(Sender: TObject);
@@ -324,10 +357,53 @@ begin
 end;
 
 procedure TfmxMain.btnSolveClick(Sender: TObject);
+
+  function SelectNewSolverPos: boolean;
+  var
+    Error: string;
+  begin
+    Push;
+    fNumbers[fSelectedBox.X, fSelectedBox.Y].TakeSolverPos;
+    if not CalcAll(Error) then
+    begin
+      if not tmrAutoSolver.Enabled then
+        ShowMessage(Error);
+      Pop;
+      result := false;
+    end
+    else
+      result := true;
+  end;
+
+  function FinishedCalced: boolean;
+  begin
+    result := true;
+  end;
+
 begin
-  fSelectedBox.X := 3;
-  fSelectedBox.Y := 7;
-  paintBox.Repaint;
+  if NewSolverPos then
+  begin
+    if fNumbers[fSelectedBox.X, fSelectedBox.Y].SearchNextSolverPos then
+    begin
+      if SelectNewSolverPos then
+        PaintBox.Repaint;
+        btnSolve.Enabled := not FinishedCalced
+    end
+    else
+      Pop;
+  end
+  else
+    if not FinishedCalced then
+      ShowMessage('No SolverPos found')
+    else
+      exit;
+end;
+
+procedure TfmxMain.btnStopAutoSolverClick(Sender: TObject);
+begin
+  tmrAutoSolver.Enabled := false;
+  btnAutoSolver.Visible := true;
+  btnStopAutoSolver.Visible := false;
 end;
 
 procedure TfmxMain.Pop;
@@ -351,6 +427,12 @@ procedure TfmxMain.StackInit;
 begin
   btnUndo.Text := 'Undo';
   btnUndo.Enabled := false;
+end;
+
+procedure TfmxMain.tmrAutoSolverTimer(Sender: TObject);
+begin
+  btnSolveClick(Sender);
+  tmrAutoSolver.Enabled := btnSolve.Enabled;
 end;
 
 procedure TfmxMain.btnUndoClick(Sender: TObject);
@@ -550,24 +632,33 @@ end;
 
 procedure TNumber.Init;
 begin
-  SolverPos:= 0;
-  ValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  Finale := 0;
-  Calculated := false;
+  fSolverPos:= 0;
+  fValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  fFinale := 0;
+  fCalculated := false;
 end;
 
 function TNumber.SearchNextSolverPos: boolean;
 var
-  c: TValueWithFinale;
+  c: TValueWithSentinel;
 begin
   c:= 1;
-  while (SolverPos+c in ValSet) and (SolverPos + c < 9) do
+  while not (fSolverPos+c in ValSet) and (fSolverPos + c < 9) do
     inc(c);
-  if SolverPos+c in ValSet then
-    Solverpos := Solverpos + c
+  if fSolverPos+c in ValSet then
+  begin
+    fSolverPos := fSolverPos + c;
+    result:= true;
+  end
   else
-    Result := false;
-  Result:= true;
+    result := false;
+end;
+
+procedure TNumber.TakeSolverPos;
+begin
+  fValSet := [fSolverPos];
+  fFinale := fSolverPos;
+  fCalculated := false;
 end;
 
 procedure TNumber.SetDefFinal(Val: TValue);

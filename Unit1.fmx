@@ -3,7 +3,7 @@ object fmxMain: TfmxMain
   Top = 0
   Caption = 'Sudoku Solver'
   ClientHeight = 530
-  ClientWidth = 480
+  ClientWidth = 493
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,18 +12,18 @@ object fmxMain: TfmxMain
   DesignerMasterStyle = 0
   object ScaledLayout: TScaledLayout
     Align = Client
-    OriginalWidth = 450.000000000000000000
+    OriginalWidth = 463.000000000000000000
     OriginalHeight = 450.000000000000000000
     Margins.Left = 15.000000000000000000
     Margins.Top = 15.000000000000000000
     Margins.Right = 15.000000000000000000
     Margins.Bottom = 15.000000000000000000
-    Size.Width = 450.000000000000000000
+    Size.Width = 463.000000000000000000
     Size.Height = 450.000000000000000000
     Size.PlatformDefault = False
     object PaintBox: TPaintBox
       Align = Client
-      Size.Width = 450.000000000000000000
+      Size.Width = 463.000000000000000000
       Size.Height = 450.000000000000000000
       Size.PlatformDefault = False
       OnMouseDown = PaintBoxMouseDown
@@ -45,6 +45,7 @@ object fmxMain: TfmxMain
         Size.Width = 150.000000000000000000
         Size.Height = 150.000000000000000000
         Size.PlatformDefault = False
+        Visible = False
         TabOrder = 0
         OnClick = CalloutPanel1Click
         CalloutWidth = 23.000000000000000000
@@ -175,7 +176,7 @@ object fmxMain: TfmxMain
   end
   object pnlToolbar: TPanel
     Align = Top
-    Size.Width = 480.000000000000000000
+    Size.Width = 493.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -221,11 +222,35 @@ object fmxMain: TfmxMain
       OnClick = btnUndoClick
     end
     object btnSolve: TButton
-      Position.X = 352.000000000000000000
+      Position.X = 320.000000000000000000
       Position.Y = 16.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
       TabOrder = 5
       Text = 'Solve'
       OnClick = btnSolveClick
+    end
+    object btnAutoSolver: TButton
+      Position.X = 408.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      Text = 'Auto Solve'
+      OnClick = btnAutoSolverClick
+    end
+    object btnStopAutoSolver: TButton
+      Position.X = 408.000000000000000000
+      Position.Y = 17.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 7
+      Text = 'Stop'
+      Visible = False
+      OnClick = btnStopAutoSolverClick
     end
   end
   object OpenDialog: TOpenDialog
@@ -239,5 +264,11 @@ object fmxMain: TfmxMain
     Filter = '*.txt|*.txt'
     Left = 120
     Top = 80
+  end
+  object tmrAutoSolver: TTimer
+    Enabled = False
+    OnTimer = tmrAutoSolverTimer
+    Left = 391
+    Top = 97
   end
 end
