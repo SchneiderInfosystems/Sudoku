@@ -20,8 +20,6 @@ type
     fValSet, fCalcSet: TValSet;
     fFinale, fBack: TValueWithSentinel;
     fCalculated: boolean;
-    fSolverPos: TValueWithSentinel;
-    function SearchNextSolverPos: boolean;
     procedure SetValSet(Val: TValSet);
     procedure SetCalcSet(Val: TValSet);
   public
@@ -31,7 +29,6 @@ type
     procedure SaveBack;
     procedure RollBack;
     procedure SetDefFinal(Val: TValue);
-    procedure TakeSolverPos;
     function IsFinale: boolean;
     function GetCount: integer;
     function GetAsStr: string;
@@ -39,10 +36,11 @@ type
     property CalcSet: TValSet read fCalcSet write SetCalcSet;
     property Calculated: boolean read fCalculated;
     property Finale: TValueWithSentinel read fFinale;
-    property SolverPos: TValueWithSentinel read fSolverPos write fSolverPos;
   end;
 
-  TNumbers = array [0 .. 8, 0 .. 8] of TNumber;
+  TNumberPos = 0..8;
+  TNumbers = array [TNumberPos,TNumberPos] of TNumber;
+  TSolverPos = array [TNumberPos, TnumberPos] of TValueWithSentinel;
 
   TfmxMain = class(TForm)
     PaintBox: TPaintBox;
@@ -89,6 +87,7 @@ type
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
+    fSolverpos: TSolverPos;
     fButton: array [1 .. 9] of TButton;
     fStack: TStack<TNumbers>;
     procedure CalcVertical;
@@ -99,6 +98,7 @@ type
     procedure StackInit;
     function GetFileName(Load: boolean): string;
     function NewSolverPos: boolean;
+    function SearchNextSolverPos(x, y: TNumberPos): boolean;
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
@@ -138,10 +138,14 @@ procedure TfmxMain.Init;
 var
   X, Y: integer;
 begin
+  btnSolve.Enabled:= true;
   fSelectedBox := Point(-1, -1);
   for X := 0 to 8 do
     for Y := 0 to 8 do
+    begin
       fNumbers[X, Y].Init;
+      fSolverPos[X, Y]:= 0;
+    end;
 end;
 
 function TfmxMain.NewSolverPos: boolean;
@@ -165,9 +169,7 @@ begin
             exit(true);
         end;
       end;
-
   result := LastFound <> 0;
-
 end;
 
 {$REGION 'Popup Panel'}
@@ -178,8 +180,8 @@ var
   p: TPointF;
   c: integer;
 begin
-  fSelectedBox.X := trunc(X / 50);
-  fSelectedBox.Y := trunc(Y / 50);
+  fSelectedBox.X := trunc(X / paintbox.Width*9);
+  fSelectedBox.Y := trunc(Y / paintbox.Height*9);
   PaintBox.Repaint;
   p := ClientToScreen(pointF((fSelectedBox.X - 0.75) * 50 * ScaledLayout.Width /
     ScaledLayout.OriginalWidth, (fSelectedBox.Y + 1.2) * 50 *
@@ -217,9 +219,10 @@ end;
 
 procedure TfmxMain.btnAutoSolverClick(Sender: TObject);
 begin
-  tmrAutoSolver.Enabled := true;
   btnAutoSolver.Visible := false;
+  tmrAutoSolver.Enabled := true;
   btnStopAutoSolver.Visible := true;
+  btnStopAutoSolver.Enabled := true;
 end;
 
 procedure TfmxMain.ButtonClick(Sender: TObject);
@@ -308,6 +311,7 @@ begin
   fn := GetFileName(true);
   if fn.IsEmpty then
     exit;
+  init;
   sl := TStringList.Create;
   try
     sl.LoadFromFile(fn);
@@ -320,15 +324,16 @@ begin
         else
           fNumbers[X, Y].Init;
       end;
-    if not CalcAll(Error) then
-    begin
-      ShowMessage(Error);
-      Init;
-    end;
-    PaintBox.Repaint;
   finally
     sl.Free;
   end;
+
+  if not CalcAll(Error) then
+  begin
+    ShowMessage(Error);
+    Init;
+  end;
+  PaintBox.Repaint;
   StackInit;
 end;
 
@@ -363,7 +368,8 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
     Error: string;
   begin
     Push;
-    fNumbers[fSelectedBox.X, fSelectedBox.Y].TakeSolverPos;
+    fNumbers[fSelectedBox.X, fSelectedBox.Y].SetDefFinal
+      (fSolverPos[fSelectedBox.X, fSelectedBox.Y]);
     if not CalcAll(Error) then
     begin
       if not tmrAutoSolver.Enabled then
@@ -376,18 +382,24 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
   end;
 
   function FinishedCalced: boolean;
+  var
+    x, y: TNumberPos;
   begin
-    result := true;
+    for Y := 0 to 8 do
+      for X := 0 to 8 do
+        if not (fNumbers[X, Y].IsFinale) then
+          exit(false);
+   result:= true;
   end;
 
 begin
   if NewSolverPos then
   begin
-    if fNumbers[fSelectedBox.X, fSelectedBox.Y].SearchNextSolverPos then
+    if SearchNextSolverPos(fSelectedBox.X , fSelectedBox.Y) then
     begin
       if SelectNewSolverPos then
         PaintBox.Repaint;
-        btnSolve.Enabled := not FinishedCalced
+      btnSolve.Enabled := not FinishedCalced
     end
     else
       Pop;
@@ -628,36 +640,28 @@ begin
     end;
 end;
 
-{ TNumber }
-
-procedure TNumber.Init;
-begin
-  fSolverPos:= 0;
-  fValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  fFinale := 0;
-  fCalculated := false;
-end;
-
-function TNumber.SearchNextSolverPos: boolean;
+function TfmxMain.SearchNextSolverPos(x, y :TNumberPos): boolean;
 var
   c: TValueWithSentinel;
 begin
   c:= 1;
-  while not (fSolverPos+c in ValSet) and (fSolverPos + c < 9) do
+  while not (fSolverPos[x, y]+c in fNumbers[x, y].Valset) and (fSolverPos[x, y]+ c < 9) do
     inc(c);
-  if fSolverPos+c in ValSet then
+  if fSolverPos[x, y]+c in fNumbers[x, y].Valset then
   begin
-    fSolverPos := fSolverPos + c;
+    fSolverPos[x, y] := fSolverPos[x, y] + c;
     result:= true;
   end
   else
     result := false;
 end;
 
-procedure TNumber.TakeSolverPos;
+{ TNumber }
+
+procedure TNumber.Init;
 begin
-  fValSet := [fSolverPos];
-  fFinale := fSolverPos;
+  fValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  fFinale := 0;
   fCalculated := false;
 end;
 

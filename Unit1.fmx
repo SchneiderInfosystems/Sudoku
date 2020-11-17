@@ -3,7 +3,7 @@ object fmxMain: TfmxMain
   Top = 0
   Caption = 'Sudoku Solver'
   ClientHeight = 530
-  ClientWidth = 493
+  ClientWidth = 480
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,18 +12,18 @@ object fmxMain: TfmxMain
   DesignerMasterStyle = 0
   object ScaledLayout: TScaledLayout
     Align = Client
-    OriginalWidth = 463.000000000000000000
+    OriginalWidth = 450.000000000000000000
     OriginalHeight = 450.000000000000000000
     Margins.Left = 15.000000000000000000
     Margins.Top = 15.000000000000000000
     Margins.Right = 15.000000000000000000
     Margins.Bottom = 15.000000000000000000
-    Size.Width = 463.000000000000000000
+    Size.Width = 450.000000000000000000
     Size.Height = 450.000000000000000000
     Size.PlatformDefault = False
     object PaintBox: TPaintBox
       Align = Client
-      Size.Width = 463.000000000000000000
+      Size.Width = 450.000000000000000000
       Size.Height = 450.000000000000000000
       Size.PlatformDefault = False
       OnMouseDown = PaintBoxMouseDown
@@ -45,7 +45,6 @@ object fmxMain: TfmxMain
         Size.Width = 150.000000000000000000
         Size.Height = 150.000000000000000000
         Size.PlatformDefault = False
-        Visible = False
         TabOrder = 0
         OnClick = CalloutPanel1Click
         CalloutWidth = 23.000000000000000000
@@ -176,7 +175,7 @@ object fmxMain: TfmxMain
   end
   object pnlToolbar: TPanel
     Align = Top
-    Size.Width = 493.000000000000000000
+    Size.Width = 480.000000000000000000
     Size.Height = 50.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
@@ -234,7 +233,7 @@ object fmxMain: TfmxMain
     object btnAutoSolver: TButton
       Position.X = 408.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 80.000000000000000000
+      Size.Width = 65.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 6
@@ -242,9 +241,10 @@ object fmxMain: TfmxMain
       OnClick = btnAutoSolverClick
     end
     object btnStopAutoSolver: TButton
+      Enabled = False
       Position.X = 408.000000000000000000
       Position.Y = 17.000000000000000000
-      Size.Width = 80.000000000000000000
+      Size.Width = 65.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 7
