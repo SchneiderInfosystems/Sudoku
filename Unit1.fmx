@@ -241,7 +241,6 @@ object fmxMain: TfmxMain
       OnClick = btnAutoSolverClick
     end
     object btnStopAutoSolver: TButton
-      Enabled = False
       Position.X = 408.000000000000000000
       Position.Y = 17.000000000000000000
       Size.Width = 65.000000000000000000

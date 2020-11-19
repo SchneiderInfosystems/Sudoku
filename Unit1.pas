@@ -17,20 +17,20 @@ type
 
   TNumber = record
   private
-    fValSet, fCalcSet: TValSet;
-    fFinale, fBack: TValueWithSentinel;
+    fValSet, fCalcSet: TValSet;          {fValSet= Numbers that are possible for selection}
+    fFinale, fBack: TValueWithSentinel;  {fFinale= Numbers that are final and cannot be changed}
     fCalculated: boolean;
     procedure SetValSet(Val: TValSet);
     procedure SetCalcSet(Val: TValSet);
   public
-    procedure Init;
-    procedure StartCalc;
+    procedure Init;                      {Initialization of TNumbers}
+    procedure StartCalc;                 {Initialization of fCalcSet}
     function EndCalc: boolean;
-    procedure SaveBack;
-    procedure RollBack;
+    procedure SaveBack;                  {Save last Numbers}
+    procedure RollBack;                  {Roll back the last Numbers}
     procedure SetDefFinal(Val: TValue);
-    function IsFinale: boolean;
-    function GetCount: integer;
+    function IsFinale: boolean;          {Validation if the Number is already set}
+    function GetCount: integer;          {Counting the amount of numbers that are available in the ValSet}
     function GetAsStr: string;
     property ValSet: TValSet read fValSet write SetValSet;
     property CalcSet: TValSet read fCalcSet write SetCalcSet;
@@ -73,32 +73,32 @@ type
     procedure CalloutPanel1Click(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
-    procedure btnSaveClick(Sender: TObject);
-    procedure btnLoadClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);           {Saves the present sudoku}
+    procedure btnLoadClick(Sender: TObject);           {Loads a saved sudoku}
     procedure btnInitClick(Sender: TObject);
     procedure PaintBoxMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Single);
-    procedure btnUndoClick(Sender: TObject);
+    procedure btnUndoClick(Sender: TObject);           {Reverse last step}
     procedure FormDestroy(Sender: TObject);
-    procedure btnSolveClick(Sender: TObject);
-    procedure tmrAutoSolverTimer(Sender: TObject);
-    procedure btnAutoSolverClick(Sender: TObject);
-    procedure btnStopAutoSolverClick(Sender: TObject);
+    procedure btnSolveClick(Sender: TObject);          {Next solve step}
+    procedure tmrAutoSolverTimer(Sender: TObject);     {Timer for AutoSolver step}
+    procedure btnAutoSolverClick(Sender: TObject);     {Starts the AutoSolver process}
+    procedure btnStopAutoSolverClick(Sender: TObject); {Stops the AutoSolver process}
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
     fSolverpos: TSolverPos;
     fButton: array [1 .. 9] of TButton;
     fStack: TStack<TNumbers>;
-    procedure CalcVertical;
-    procedure CalcHorizontal;
+    procedure CalcVertical;   {Validates that the number isnt reoccuring in the same vertical row}
+    procedure CalcHorizontal; {Validates that the number isnt reoccuring in the same horizontal row}
     procedure CalcBox;
-    procedure Push;
-    procedure Pop;
+    procedure Push;           {Pushes the present state on to the stack}
+    procedure Pop;            {Removes the last added state from the stack}
     procedure StackInit;
     function GetFileName(Load: boolean): string;
-    function NewSolverPos: boolean;
-    function SearchNextSolverPos(x, y: TNumberPos): boolean;
+    function NewSolverPos: boolean;      {Searching for the Box with the lowest possibilities}
+    function SearchNextSolverPos(x, y: TNumberPos): boolean; {Selects a new Number that wasnt used in this box}
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
@@ -134,11 +134,14 @@ begin
   fStack.Free;
 end;
 
-procedure TfmxMain.Init;
+procedure TfmxMain.Init;        {All boxes are set to 0 and buttons get reset}
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
 begin
   btnSolve.Enabled:= true;
+  btnAutoSolver.Visible := true;
+  btnAutoSolver.Enabled := true;
+  btnStopAutoSolver.Visible := false;
   fSelectedBox := Point(-1, -1);
   for X := 0 to 8 do
     for Y := 0 to 8 do
@@ -148,9 +151,9 @@ begin
     end;
 end;
 
-function TfmxMain.NewSolverPos: boolean;
+function TfmxMain.NewSolverPos: boolean;  {Searching for the Box with the lowest possibilities}
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
   LastFound: TValueWithSentinel;
 begin
   LastFound:= 0;
@@ -222,7 +225,6 @@ begin
   btnAutoSolver.Visible := false;
   tmrAutoSolver.Enabled := true;
   btnStopAutoSolver.Visible := true;
-  btnStopAutoSolver.Enabled := true;
 end;
 
 procedure TfmxMain.ButtonClick(Sender: TObject);
@@ -340,7 +342,7 @@ end;
 procedure TfmxMain.btnSaveClick(Sender: TObject);
 var
   sl: TStringList;
-  X, Y: integer;
+  X, Y: TNumberPos;
   fn: string;
 begin
   fn := GetFileName(false);
@@ -381,7 +383,7 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
       result := true;
   end;
 
-  function FinishedCalced: boolean;
+  function FinishedCalced: boolean;     {True when Soduko solved}
   var
     x, y: TNumberPos;
   begin
@@ -389,7 +391,13 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
       for X := 0 to 8 do
         if not (fNumbers[X, Y].IsFinale) then
           exit(false);
-   result:= true;
+    btnStopAutoSolver.Visible := false;
+    btnAutoSolver.Visible := true;
+    btnAutoSolver.Enabled := false;
+    tmrAutoSolver.Enabled := false;
+    btnSolve.Enabled:= false;
+    btnUndo.Enabled:= false;
+    result:= true;
   end;
 
 begin
@@ -411,7 +419,7 @@ begin
       exit;
 end;
 
-procedure TfmxMain.btnStopAutoSolverClick(Sender: TObject);
+procedure TfmxMain.btnStopAutoSolverClick(Sender: TObject);   {Pause the timer}
 begin
   tmrAutoSolver.Enabled := false;
   btnAutoSolver.Visible := true;
@@ -441,7 +449,7 @@ begin
   btnUndo.Enabled := false;
 end;
 
-procedure TfmxMain.tmrAutoSolverTimer(Sender: TObject);
+procedure TfmxMain.tmrAutoSolverTimer(Sender: TObject); {Timer}
 begin
   btnSolveClick(Sender);
   tmrAutoSolver.Enabled := btnSolve.Enabled;
@@ -456,7 +464,7 @@ end;
 
 procedure TfmxMain.PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
   r: TRectF;
 begin
   Canvas.BeginScene;
@@ -520,7 +528,7 @@ end;
 
 function TfmxMain.CalcAll(var Error: string): boolean;
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
   EndCalc: boolean;
 begin
   result := false;
@@ -560,7 +568,7 @@ end;
 
 procedure TfmxMain.CalcVertical;
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
   ValSet: TValSet;
 begin
   for X := 0 to 8 do
@@ -586,7 +594,7 @@ end;
 
 procedure TfmxMain.CalcHorizontal;
 var
-  X, Y: integer;
+  X, Y: TNumberPos;
   ValSet: TValSet;
 begin
   for Y := 0 to 8 do
