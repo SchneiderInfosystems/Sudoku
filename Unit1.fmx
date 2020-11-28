@@ -220,6 +220,37 @@ object fmxMain: TfmxMain
       Text = 'Undo'
       OnClick = btnUndoClick
     end
+    object btnSolve: TButton
+      Position.X = 320.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+      Text = 'Solve'
+      OnClick = btnSolveClick
+    end
+    object btnAutoSolver: TButton
+      Position.X = 408.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      Text = 'Auto Solve'
+      OnClick = btnAutoSolverClick
+    end
+    object btnStopAutoSolver: TButton
+      Position.X = 408.000000000000000000
+      Position.Y = 17.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 7
+      Text = 'Stop'
+      Visible = False
+      OnClick = btnStopAutoSolverClick
+    end
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'
@@ -232,5 +263,11 @@ object fmxMain: TfmxMain
     Filter = '*.txt|*.txt'
     Left = 120
     Top = 80
+  end
+  object tmrAutoSolver: TTimer
+    Enabled = False
+    OnTimer = tmrAutoSolverTimer
+    Left = 391
+    Top = 97
   end
 end
