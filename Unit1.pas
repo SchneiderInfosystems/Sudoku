@@ -6,7 +6,8 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes,
   System.Variants, System.Generics.Collections,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
-  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Layouts, FMX.Menus;
+  FMX.Controls.Presentation, FMX.StdCtrls, FMX.Objects, FMX.Layouts, FMX.Menus,
+  FMX.ListBox;
 
 type
   ESudokuRule = class(Exception);
@@ -40,7 +41,7 @@ type
 
   TNumberPos = 0..8;
   TNumbers = array [TNumberPos,TNumberPos] of TNumber;
-  TSolverPos = array [TNumberPos, TnumberPos] of TValueWithSentinel;
+  TSolverPos = array [TNumberPos, TNumberPos] of TValueWithSentinel;
 
   TfmxMain = class(TForm)
     PaintBox: TPaintBox;
@@ -68,6 +69,9 @@ type
     tmrAutoSolver: TTimer;
     btnAutoSolver: TButton;
     btnStopAutoSolver: TButton;
+    rctMessage: TRectangle;
+    txtMessage: TText;
+    lstLog: TListBox;
     procedure PaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FormCreate(Sender: TObject);
     procedure CalloutPanel1Click(Sender: TObject);
@@ -88,6 +92,7 @@ type
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
     fSolverpos: TSolverPos;
+    fSolverSteps: integer;
     fButton: array [1 .. 9] of TButton;
     fStack: TStack<TNumbers>;
     procedure CalcVertical;   {Validates that the number isnt reoccuring in the same vertical row}
@@ -97,11 +102,14 @@ type
     procedure Pop;            {Removes the last added state from the stack}
     procedure StackInit;
     function GetFileName(Load: boolean): string;
-    function NewSolverPos: boolean;      {Searching for the Box with the lowest possibilities}
+    function GetNextSolverPos: boolean;      {Searching for the Box with the lowest possibilities}
     function SearchNextSolverPos(x, y: TNumberPos): boolean; {Selects a new Number that wasnt used in this box}
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
+    procedure ShowError(const Error: string);
+    procedure ClearError;
+    procedure LogMsg(const Msg: string);
   end;
 
 var
@@ -125,8 +133,8 @@ begin
   fButton[7] := Button7;
   fButton[8] := Button8;
   fButton[9] := Button9;
-  Init;
   fStack := TStack<TNumbers>.Create;
+  Init;
 end;
 
 procedure TfmxMain.FormDestroy(Sender: TObject);
@@ -139,6 +147,8 @@ var
   X, Y: TNumberPos;
 begin
   btnSolve.Enabled:= true;
+  btnSolve.Text := 'Solve';
+  fSolverSteps := 0;
   btnAutoSolver.Visible := true;
   btnAutoSolver.Enabled := true;
   btnStopAutoSolver.Visible := false;
@@ -149,14 +159,17 @@ begin
       fNumbers[X, Y].Init;
       fSolverPos[X, Y]:= 0;
     end;
+  fStack.Clear;
+  ClearError;
+  lstLog.Clear;
 end;
 
-function TfmxMain.NewSolverPos: boolean;  {Searching for the Box with the lowest possibilities}
+function TfmxMain.GetNextSolverPos: boolean;  {Searching for the Box with the lowest possibilities}
 var
   X, Y: TNumberPos;
   LastFound: TValueWithSentinel;
 begin
-  LastFound:= 0;
+  LastFound := 0;
   for Y := 0 to 8 do
     for X := 0 to 8 do
       begin
@@ -165,9 +178,7 @@ begin
         begin
           fSelectedBox.X := X;
           fSelectedBox.Y := Y;
-
           LastFound := fNumbers[X, Y].GetCount;
-
           if LastFound = 2 then
             exit(true);
         end;
@@ -195,6 +206,7 @@ begin
     fButton[c].Visible := c in fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet;
   btnClear.SetFocus;
   Popup.IsOpen := true;
+  ClearError;
 end;
 
 procedure TfmxMain.btnClearClick(Sender: TObject);
@@ -208,7 +220,7 @@ begin
     fNumbers[fSelectedBox.X, fSelectedBox.Y].Init;
     if not CalcAll(Error) then
     begin
-      ShowMessage(Error);
+      ShowError(Error);
       fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet := oldValS;
       PaintBox.Repaint;
     end
@@ -241,7 +253,7 @@ begin
     fNumbers[fSelectedBox.X, fSelectedBox.Y].SetDefFinal(Val);
     if not CalcAll(Error) then
     begin
-      ShowMessage(Error);
+      ShowError(Error);
       fNumbers[fSelectedBox.X, fSelectedBox.Y].ValSet := oldValS;
       PaintBox.Repaint;
     end
@@ -313,7 +325,7 @@ begin
   fn := GetFileName(true);
   if fn.IsEmpty then
     exit;
-  init;
+  Init;
   sl := TStringList.Create;
   try
     sl.LoadFromFile(fn);
@@ -332,7 +344,7 @@ begin
 
   if not CalcAll(Error) then
   begin
-    ShowMessage(Error);
+    ShowError(Error);
     Init;
   end;
   PaintBox.Repaint;
@@ -368,18 +380,21 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
   function SelectNewSolverPos: boolean;
   var
     Error: string;
+    ValSet: string;
   begin
     Push;
-    fNumbers[fSelectedBox.X, fSelectedBox.Y].SetDefFinal
-      (fSolverPos[fSelectedBox.X, fSelectedBox.Y]);
+    ValSet := fNumbers[fSelectedBox.X, fSelectedBox.Y].GetAsStr;
+    fNumbers[fSelectedBox.X, fSelectedBox.Y].SetDefFinal(
+      fSolverPos[fSelectedBox.X, fSelectedBox.Y]);
+    LogMsg(Format('%d) [%d,%d] Select %d from {%s}: %d',
+      [fSolverSteps, fSelectedBox.X + 1, fSelectedBox.Y + 1,
+       fNumbers[fSelectedBox.X, fSelectedBox.Y].fFinale, ValSet, fStack.Count]));
     if not CalcAll(Error) then
     begin
-      if not tmrAutoSolver.Enabled then
-        ShowMessage(Error);
+      ShowError(Error);
       Pop;
       result := false;
-    end
-    else
+    end else
       result := true;
   end;
 
@@ -395,28 +410,41 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
     btnAutoSolver.Visible := true;
     btnAutoSolver.Enabled := false;
     tmrAutoSolver.Enabled := false;
-    btnSolve.Enabled:= false;
-    btnUndo.Enabled:= false;
+    btnSolve.Enabled := false;
+    btnUndo.Enabled := false;
     result:= true;
   end;
 
-begin
-  if NewSolverPos then
+  procedure NoSolution;
   begin
+    btnSolve.Enabled := false;
+    btnStopAutoSolver.Visible := false;
+    btnAutoSolver.Visible := true;
+    ShowError('No solution found');
+  end;
+
+begin
+  ClearError;
+  if GetNextSolverPos then
+  begin
+    inc(fSolverSteps);
+    btnSolve.Text := Format('Solve (%d)', [fSolverSteps]);
     if SearchNextSolverPos(fSelectedBox.X , fSelectedBox.Y) then
     begin
-      if SelectNewSolverPos then
-        PaintBox.Repaint;
-      btnSolve.Enabled := not FinishedCalced
+      SelectNewSolverPos;
+      btnSolve.Enabled := not FinishedCalced;
     end
-    else
+    else if fStack.Count > 0 then
+    begin
       Pop;
+      LogMsg(Format('%d) Revert one step: %d', [fSolverSteps, fStack.Count]));
+      GetNextSolverPos;
+    end else
+      NoSolution;
   end
-  else
-    if not FinishedCalced then
-      ShowMessage('No SolverPos found')
-    else
-      exit;
+  else if not FinishedCalced then
+    NoSolution;
+  PaintBox.Repaint;
 end;
 
 procedure TfmxMain.btnStopAutoSolverClick(Sender: TObject);   {Pause the timer}
@@ -652,16 +680,33 @@ function TfmxMain.SearchNextSolverPos(x, y :TNumberPos): boolean;
 var
   c: TValueWithSentinel;
 begin
-  c:= 1;
-  while not (fSolverPos[x, y]+c in fNumbers[x, y].Valset) and (fSolverPos[x, y]+ c < 9) do
+  c := 1;
+  while not (fSolverPos[x, y] + c in fNumbers[x, y].Valset) and
+    (fSolverPos[x, y] + c < 9) do
     inc(c);
-  if fSolverPos[x, y]+c in fNumbers[x, y].Valset then
+  if fSolverPos[x, y] + c in fNumbers[x, y].Valset then
   begin
     fSolverPos[x, y] := fSolverPos[x, y] + c;
-    result:= true;
-  end
-  else
+    result := true;
+  end else
     result := false;
+end;
+
+procedure TfmxMain.ShowError(const Error: string);
+begin
+  rctMessage.Visible := true;
+  txtMessage.Text := Error;
+  LogMsg(Error);
+end;
+
+procedure TfmxMain.ClearError;
+begin
+  rctMessage.Visible := false;
+end;
+
+procedure TfmxMain.LogMsg(const Msg: string);
+begin
+  lstLog.ItemIndex := lstLog.Items.Add(Msg);
 end;
 
 { TNumber }

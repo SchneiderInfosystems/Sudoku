@@ -2,8 +2,8 @@ object fmxMain: TfmxMain
   Left = 0
   Top = 0
   Caption = 'Sudoku Solver'
-  ClientHeight = 530
-  ClientWidth = 480
+  ClientHeight = 561
+  ClientWidth = 680
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -175,8 +175,8 @@ object fmxMain: TfmxMain
   end
   object pnlToolbar: TPanel
     Align = Top
-    Size.Width = 480.000000000000000000
-    Size.Height = 50.000000000000000000
+    Size.Width = 680.000000000000000000
+    Size.Height = 81.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object btnSave: TButton
@@ -251,6 +251,22 @@ object fmxMain: TfmxMain
       Visible = False
       OnClick = btnStopAutoSolverClick
     end
+    object rctMessage: TRectangle
+      Fill.Color = claRed
+      Position.X = 16.000000000000000000
+      Position.Y = 48.000000000000000000
+      Size.Width = 457.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      object txtMessage: TText
+        Align = Client
+        Size.Width = 457.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Message'
+        TextSettings.FontColor = claWhite
+      end
+    end
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'
@@ -269,5 +285,20 @@ object fmxMain: TfmxMain
     OnTimer = tmrAutoSolverTimer
     Left = 391
     Top = 97
+  end
+  object lstLog: TListBox
+    Align = Right
+    Position.X = 480.000000000000000000
+    Position.Y = 81.000000000000000000
+    Size.Width = 200.000000000000000000
+    Size.Height = 480.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 196.000000000000000000
+    Viewport.Height = 476.000000000000000000
   end
 end
