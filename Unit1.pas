@@ -21,6 +21,8 @@ type
     fValSet, fCalcSet: TValSet;          {fValSet= Numbers that are possible for selection}
     fFinale, fBack: TValueWithSentinel;  {fFinale= Numbers that are final and cannot be changed}
     fCalculated: boolean;
+    fSolverPos: TValueWithSentinel;
+    function SearchNextSolverPos: boolean;
     procedure SetValSet(Val: TValSet);
     procedure SetCalcSet(Val: TValSet);
   public
@@ -30,6 +32,7 @@ type
     procedure SaveBack;                  {Save last Numbers}
     procedure RollBack;                  {Roll back the last Numbers}
     procedure SetDefFinal(Val: TValue);
+    procedure TakeSolverPos;             {Selects a new Number that wasnt used in this box}
     function IsFinale: boolean;          {Validation if the Number is already set}
     function GetCount: integer;          {Counting the amount of numbers that are available in the ValSet}
     function GetAsStr: string;
@@ -37,11 +40,11 @@ type
     property CalcSet: TValSet read fCalcSet write SetCalcSet;
     property Calculated: boolean read fCalculated;
     property Finale: TValueWithSentinel read fFinale;
+    property SolverPos: TValueWithSentinel read fSolverPos write fSolverPos;
   end;
 
   TNumberPos = 0..8;
   TNumbers = array [TNumberPos,TNumberPos] of TNumber;
-  TSolverPos = array [TNumberPos, TNumberPos] of TValueWithSentinel;
 
   TfmxMain = class(TForm)
     PaintBox: TPaintBox;
@@ -91,7 +94,6 @@ type
   private
     fSelectedBox: TPoint;
     fNumbers: TNumbers;
-    fSolverpos: TSolverPos;
     fSolverSteps: integer;
     fButton: array [1 .. 9] of TButton;
     fStack: TStack<TNumbers>;
@@ -103,7 +105,6 @@ type
     procedure StackInit;
     function GetFileName(Load: boolean): string;
     function GetNextSolverPos: boolean;      {Searching for the Box with the lowest possibilities}
-    function SearchNextSolverPos(x, y: TNumberPos): boolean; {Selects a new Number that wasnt used in this box}
   public
     procedure Init;
     function CalcAll(var Error: string): boolean;
@@ -155,10 +156,7 @@ begin
   fSelectedBox := Point(-1, -1);
   for X := 0 to 8 do
     for Y := 0 to 8 do
-    begin
       fNumbers[X, Y].Init;
-      fSolverPos[X, Y]:= 0;
-    end;
   fStack.Clear;
   ClearError;
   lstLog.Clear;
@@ -169,7 +167,7 @@ var
   X, Y: TNumberPos;
   LastFound: TValueWithSentinel;
 begin
-  LastFound := 0;
+  LastFound:= 0;
   for Y := 0 to 8 do
     for X := 0 to 8 do
       begin
@@ -178,7 +176,9 @@ begin
         begin
           fSelectedBox.X := X;
           fSelectedBox.Y := Y;
+
           LastFound := fNumbers[X, Y].GetCount;
+
           if LastFound = 2 then
             exit(true);
         end;
@@ -194,8 +194,8 @@ var
   p: TPointF;
   c: integer;
 begin
-  fSelectedBox.X := trunc(X / paintbox.Width*9);
-  fSelectedBox.Y := trunc(Y / paintbox.Height*9);
+  fSelectedBox.X := trunc(X / paintbox.Width * 9);
+  fSelectedBox.Y := trunc(Y / paintbox.Height * 9);
   PaintBox.Repaint;
   p := ClientToScreen(pointF((fSelectedBox.X - 0.75) * 50 * ScaledLayout.Width /
     ScaledLayout.OriginalWidth, (fSelectedBox.Y + 1.2) * 50 *
@@ -384,8 +384,7 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
   begin
     Push;
     ValSet := fNumbers[fSelectedBox.X, fSelectedBox.Y].GetAsStr;
-    fNumbers[fSelectedBox.X, fSelectedBox.Y].SetDefFinal(
-      fSolverPos[fSelectedBox.X, fSelectedBox.Y]);
+    fNumbers[fSelectedBox.X, fSelectedBox.Y].TakeSolverPos;
     LogMsg(Format('%d) [%d,%d] Select %d from {%s}: %d',
       [fSolverSteps, fSelectedBox.X + 1, fSelectedBox.Y + 1,
        fNumbers[fSelectedBox.X, fSelectedBox.Y].fFinale, ValSet, fStack.Count]));
@@ -398,7 +397,7 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
       result := true;
   end;
 
-  function FinishedCalced: boolean;     {True when Soduko solved}
+  function FinishedCalced: boolean;     {True when Soduko is solved}
   var
     x, y: TNumberPos;
   begin
@@ -412,7 +411,8 @@ procedure TfmxMain.btnSolveClick(Sender: TObject);
     tmrAutoSolver.Enabled := false;
     btnSolve.Enabled := false;
     btnUndo.Enabled := false;
-    result:= true;
+    LogMsg(Format('Sudoku solved in %d steps', [fSolverSteps]));
+    result := true;
   end;
 
   procedure NoSolution;
@@ -429,7 +429,7 @@ begin
   begin
     inc(fSolverSteps);
     btnSolve.Text := Format('Solve (%d)', [fSolverSteps]);
-    if SearchNextSolverPos(fSelectedBox.X , fSelectedBox.Y) then
+    if fNumbers[fSelectedBox.X, fSelectedBox.Y].SearchNextSolverPos then
     begin
       SelectNewSolverPos;
       btnSolve.Enabled := not FinishedCalced;
@@ -477,7 +477,7 @@ begin
   btnUndo.Enabled := false;
 end;
 
-procedure TfmxMain.tmrAutoSolverTimer(Sender: TObject); {Timer}
+procedure TfmxMain.tmrAutoSolverTimer(Sender: TObject);
 begin
   btnSolveClick(Sender);
   tmrAutoSolver.Enabled := btnSolve.Enabled;
@@ -676,22 +676,6 @@ begin
     end;
 end;
 
-function TfmxMain.SearchNextSolverPos(x, y :TNumberPos): boolean;
-var
-  c: TValueWithSentinel;
-begin
-  c := 1;
-  while not (fSolverPos[x, y] + c in fNumbers[x, y].Valset) and
-    (fSolverPos[x, y] + c < 9) do
-    inc(c);
-  if fSolverPos[x, y] + c in fNumbers[x, y].Valset then
-  begin
-    fSolverPos[x, y] := fSolverPos[x, y] + c;
-    result := true;
-  end else
-    result := false;
-end;
-
 procedure TfmxMain.ShowError(const Error: string);
 begin
   rctMessage.Visible := true;
@@ -713,8 +697,32 @@ end;
 
 procedure TNumber.Init;
 begin
+  fSolverPos:= 0;
   fValSet := [1, 2, 3, 4, 5, 6, 7, 8, 9];
   fFinale := 0;
+  fCalculated := false;
+end;
+
+function TNumber.SearchNextSolverPos: boolean;
+var
+  c: TValueWithSentinel;
+begin
+  c:= 1;
+  while not (fSolverPos+c in ValSet) and (fSolverPos + c < 9) do
+    inc(c);
+  if fSolverPos+c in ValSet then
+  begin
+    fSolverPos := fSolverPos + c;
+    result:= true;
+  end
+  else
+    result := false;
+end;
+
+procedure TNumber.TakeSolverPos;
+begin
+  fValSet := [fSolverPos];
+  fFinale := fSolverPos;
   fCalculated := false;
 end;
 
