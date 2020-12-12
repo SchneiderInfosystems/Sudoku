@@ -372,7 +372,7 @@ begin
 
   Canvas.Stroke.Color := TAlphaColors.Black;
   Canvas.Stroke.Kind := TBrushKind.Solid;
-  Canvas.Stroke.Thickness := 3;
+  Canvas.Stroke.Thickness := 4;
   for X := 0 to 2 do
     for Y := 0 to 2 do
     begin

@@ -221,16 +221,20 @@ object fmxMain: TfmxMain
       OnClick = btnUndoClick
     end
     object rctMessage: TRectangle
+      Align = Bottom
       Fill.Color = claRed
-      Position.X = 16.000000000000000000
-      Position.Y = 48.000000000000000000
-      Size.Width = 457.000000000000000000
+      Margins.Left = 8.000000000000000000
+      Margins.Right = 8.000000000000000000
+      Margins.Bottom = 3.000000000000000000
+      Position.X = 8.000000000000000000
+      Position.Y = 20.000000000000000000
+      Size.Width = 464.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       Visible = False
       object txtMessage: TText
         Align = Client
-        Size.Width = 457.000000000000000000
+        Size.Width = 464.000000000000000000
         Size.Height = 25.000000000000000000
         Size.PlatformDefault = False
         Text = 'Message'
