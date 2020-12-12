@@ -3,11 +3,11 @@
 
 ## Introduction 
 
-This is a Delphi educational project prepared for Delphi 10.3 Rio. This application is prepared to run on Windows 32/64, and on MacOS 64, and on Android and on iOS devices. 
+This is a Delphi learning project prepared for Delphi 10.4 Sydney. This application is prepared to run on Windows 32/64, and on MacOS 64, and on Android and on iOS devices. 
 
-Thanks to the integrated half-solver, all 3 rules are checked continuously during input and only those digits are automatically available that do not cause rule conflicts.
+Thanks to the integrated half-solver, all 3 rules are continuously checked during input and only those digits are automatically available that do not cause rule conflicts.
 
-There are plans to add a full solver based on a backtracking algorithm to this application to explain the simplicity of the algorithm to the students.
+Since December 2020, a full solver based on the backtracking algorithm has been added. It is used to explain the simplicity of this algorithm to the students.
 
 ## Precondition
 
@@ -41,7 +41,22 @@ See also https://en.wikipedia.org/wiki/Sudoku
 ## Hint for field visualzation
 * (3..9): Number of selectable digits;
 * {Digit1, Digit2}: If only two digits can be selected, these are displayed directly as a set;
+* Field with border color __red__: Selected field in order to choose a digit;
 * Field with back color __white__: Entered digit;
 * Field with back color __green__: Calculated digit;
-* Field with back color __red__: Selected field in order to choose a digit;
+* Filed with back color __blue__: Selected (tried) digit by the auto solver;
 * Field with back color __pink__: Role conflict in the horizontal line, the vertical line or within the 3x3 box.
+
+## Using the Auto Solver
+
+Pressing the __Solve__ button executes a single solver step. 
+
+The algorithm searches for the number field with the smallest variability starting from the upper left edge. I.e. it selects the number field that has only 2 possible digits or the number field with the smallest set of digits. 
+
+In the second step, the first available digit from this field is tentatively selected and checked if it does not trigger a rule violation in the half-solver. In case of a rule violation, the previous digit choice must be reversed. This digit must not be tried again in a next solver step.
+
+![Sudoku Example while auto solving](/AutoSolver.png)
+
+The __Auto Solve__ button can be used to automatically repeat the solving steps until a final Suduko configuration is reached. Thereby the solving speed can be selected. A log informs about each solver step.
+
+Have fun solving Sudokus and understanding the backtracking algorithm.
