@@ -3,7 +3,7 @@ object fmxMain: TfmxMain
   Top = 0
   Caption = 'Sudoku Solver'
   ClientHeight = 561
-  ClientWidth = 680
+  ClientWidth = 480
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -175,14 +175,14 @@ object fmxMain: TfmxMain
   end
   object pnlToolbar: TPanel
     Align = Top
-    Size.Width = 680.000000000000000000
+    Size.Width = 480.000000000000000000
     Size.Height = 81.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object btnSave: TButton
-      Position.X = 88.000000000000000000
+      Position.X = 96.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 65.000000000000000000
+      Size.Width = 80.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
@@ -190,9 +190,9 @@ object fmxMain: TfmxMain
       OnClick = btnSaveClick
     end
     object btnLoad: TButton
-      Position.X = 160.000000000000000000
+      Position.X = 184.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 65.000000000000000000
+      Size.Width = 80.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
@@ -200,9 +200,9 @@ object fmxMain: TfmxMain
       OnClick = btnLoadClick
     end
     object btnInit: TButton
-      Position.X = 16.000000000000000000
+      Position.X = 8.000000000000000000
       Position.Y = 16.000000000000000000
-      Size.Width = 65.000000000000000000
+      Size.Width = 80.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
@@ -211,7 +211,7 @@ object fmxMain: TfmxMain
     end
     object btnUndo: TButton
       Enabled = False
-      Position.X = 232.000000000000000000
+      Position.X = 384.000000000000000000
       Position.Y = 16.000000000000000000
       Size.Width = 80.000000000000000000
       Size.Height = 25.000000000000000000
@@ -220,37 +220,6 @@ object fmxMain: TfmxMain
       Text = 'Undo'
       OnClick = btnUndoClick
     end
-    object btnSolve: TButton
-      Position.X = 320.000000000000000000
-      Position.Y = 16.000000000000000000
-      Size.Width = 80.000000000000000000
-      Size.Height = 25.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 5
-      Text = 'Solve'
-      OnClick = btnSolveClick
-    end
-    object btnAutoSolver: TButton
-      Position.X = 408.000000000000000000
-      Position.Y = 16.000000000000000000
-      Size.Width = 65.000000000000000000
-      Size.Height = 25.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 6
-      Text = 'Auto Solve'
-      OnClick = btnAutoSolverClick
-    end
-    object btnStopAutoSolver: TButton
-      Position.X = 408.000000000000000000
-      Position.Y = 17.000000000000000000
-      Size.Width = 65.000000000000000000
-      Size.Height = 25.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 7
-      Text = 'Stop'
-      Visible = False
-      OnClick = btnStopAutoSolverClick
-    end
     object rctMessage: TRectangle
       Fill.Color = claRed
       Position.X = 16.000000000000000000
@@ -258,6 +227,7 @@ object fmxMain: TfmxMain
       Size.Width = 457.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
+      Visible = False
       object txtMessage: TText
         Align = Client
         Size.Width = 457.000000000000000000
@@ -265,6 +235,80 @@ object fmxMain: TfmxMain
         Size.PlatformDefault = False
         Text = 'Message'
         TextSettings.FontColor = claWhite
+      end
+    end
+    object laySolverTools: TLayout
+      Align = Bottom
+      Position.Y = 48.000000000000000000
+      Size.Width = 480.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+      object btnAutoSolver: TButton
+        Position.X = 96.000000000000000000
+        Size.Width = 81.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 6
+        Text = 'Auto Solve'
+        OnClick = btnAutoSolverClick
+      end
+      object btnSolve: TButton
+        Position.X = 8.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        Text = 'Solve'
+        OnClick = btnSolveClick
+      end
+      object btnShowLog: TButton
+        Position.X = 384.000000000000000000
+        Size.Width = 81.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 8
+        Text = 'Show Log'
+        OnClick = btnShowLogClick
+      end
+      object trbSpeed: TTrackBar
+        CanParentFocus = True
+        Frequency = 50.000000000000000000
+        Max = 2000.000000000000000000
+        Min = 50.000000000000000000
+        Orientation = Horizontal
+        Position.X = 232.000000000000000000
+        Position.Y = 4.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 9
+        Value = 1000.000000000000000000
+        OnChange = trbSpeedChange
+      end
+      object Text1: TText
+        Position.X = 187.000000000000000000
+        Size.Width = 41.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Fast'
+      end
+      object Text2: TText
+        Position.X = 339.000000000000000000
+        Size.Width = 41.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Slow'
+      end
+      object btnStopAutoSolver: TButton
+        Position.X = 96.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 25.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 7
+        Text = 'Stop'
+        Visible = False
+        OnClick = btnStopAutoSolverClick
       end
     end
   end
@@ -294,6 +338,7 @@ object fmxMain: TfmxMain
     Size.Height = 480.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 4
+    Visible = False
     DisableFocusEffect = True
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
