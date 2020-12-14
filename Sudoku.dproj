@@ -101,7 +101,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>Sudoku2</SanitizedProjectName>
+        <SanitizedProjectName>Sudoku</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;emsclientfiredac;tethering;DataSnapFireDAC;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;FireDACDBXDriver;dbexpress;IndyCore;dsnap;emsclient;DataSnapCommon;FireDACCommon;RESTBackendComponents;soapserver;FMXTMSFNCUIPackPkgDXE13;bindengine;CloudService;FireDACCommonDriver;DataSnapClient;inet;IndyIPCommon;bindcompdbx;IndyIPServer;IndySystem;fmxFireDAC;FMXTMSFNCCorePkgDXE13;FireDAC;FireDACSqliteDriver;FMXTee;soaprtl;DbxCommonDriver;xmlrtl;soapmidas;DataSnapNativeClient;FireDACDSDriver;rtl;DbxClientDriver;CustomIPTransport;bindcomp;IndyIPClient;dbxcds;dsnapxml;DataSnapProviderClient;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -322,6 +322,11 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_ApplicationIcon_144x144.png" Configuration="Debug" Class="iPad_AppIcon144">
+                    <Platform Name="iOSDevice64">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_LaunchImagePortrait_1668x2388.png" Configuration="Debug" Class="iPad_Launch1668x2388">
                     <Platform Name="iOSDevice64">
                         <RemoteName>Default-1668w-2388h@2x~ipad.png</RemoteName>
@@ -331,11 +336,6 @@
                 <DeployFile LocalName="$(BDS)\bin\Artwork\Android\FM_SplashImage_426x320.png" Configuration="Debug" Class="Android_SplashImage426">
                     <Platform Name="Android">
                         <RemoteName>splash_image.png</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_ApplicationIcon_144x144.png" Configuration="Debug" Class="iPad_AppIcon144">
-                    <Platform Name="iOSDevice64">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -374,6 +374,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="OSX64\Debug\Sudoku.info.plist" Configuration="Debug" Class="ProjectOSXInfoPList">
+                    <Platform Name="OSX64">
+                        <RemoteName>Info.plist</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="iOSDevice64\Debug\Sudoko.entitlements" Configuration="Debug" Class="ProjectiOSEntitlements">
                     <Platform Name="iOSDevice64">
                         <Overwrite>true</Overwrite>
@@ -395,12 +401,6 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="OSX64\Debug\Sudoku" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="OSX64">
-                        <RemoteName>Sudoku</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPhone\FM_LaunchImage_640x960.png" Configuration="Debug" Class="iPhone_Launch640">
                     <Platform Name="iOSDevice64">
                         <RemoteName>Default@2x.png</RemoteName>
@@ -413,9 +413,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="OSX64\Debug\Sudoku.info.plist" Configuration="Debug" Class="ProjectOSXInfoPList">
+                <DeployFile LocalName="OSX64\Debug\Sudoku" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="OSX64">
-                        <RemoteName>Info.plist</RemoteName>
+                        <RemoteName>Sudoku</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -518,6 +518,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="OSX64\Release\Sudoku.info.plist" Configuration="Release" Class="ProjectOSXInfoPList">
+                    <Platform Name="OSX64">
+                        <RemoteName>Info.plist</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_SpotlightSearchIcon_100x100.png" Configuration="Debug" Class="iPad_SpotLight100">
                     <Platform Name="iOSDevice64">
                         <Overwrite>true</Overwrite>
@@ -533,21 +539,27 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPhone\FM_LaunchImage_1334x750.png" Configuration="Debug" Class="iPhone_Launch1334">
-                    <Platform Name="iOSDevice64">
-                        <RemoteName>Default-Landscape-750w-1334h@2x.png</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="Win64\Debug\Sudoku.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>Sudoku.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPhone\FM_LaunchImage_1334x750.png" Configuration="Debug" Class="iPhone_Launch1334">
+                    <Platform Name="iOSDevice64">
+                        <RemoteName>Default-Landscape-750w-1334h@2x.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\bin\Artwork\Android\FM_NotificationIcon_72x72.png" Configuration="Debug" Class="Android_NotificationIcon72">
                     <Platform Name="Android">
                         <RemoteName>ic_notification.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\bin\delphi_PROJECTICNS.icns" Configuration="Release" Class="ProjectOSXResource">
+                    <Platform Name="OSX64">
+                        <RemoteName>Sudoku.icns</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -709,6 +721,11 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="OSX64\Release\Sudoku.entitlements" Configuration="Release" Class="ProjectOSXEntitlements">
+                    <Platform Name="OSX64">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_ApplicationIcon_152x152.png" Configuration="Debug" Class="iPad_AppIcon152">
                     <Platform Name="iOSDevice64">
                         <Overwrite>true</Overwrite>
@@ -785,6 +802,18 @@
                 <DeployFile LocalName="$(BDS)\bin\Artwork\iOS\iPad\FM_LaunchImageLandscape_2732x2048.png" Configuration="Debug" Class="iPad_Launch2732x2048">
                     <Platform Name="iOSDevice64">
                         <RemoteName>Default-Landscape-2048w-2732h@2x~ipad.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="OSX64\Release\Sudoku.dSYM" Configuration="Release" Class="ProjectOSXDebug">
+                    <Platform Name="OSX64">
+                        <RemoteName>Sudoku</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="OSX64\Release\Sudoku" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="OSX64">
+                        <RemoteName>Sudoku</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -1870,6 +1899,7 @@
                 <Platform value="Android64">True</Platform>
                 <Platform value="iOSDevice64">True</Platform>
                 <Platform value="iOSSimulator">True</Platform>
+                <Platform value="Linux64">True</Platform>
                 <Platform value="OSX64">True</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">True</Platform>

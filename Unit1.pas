@@ -250,9 +250,7 @@ begin
   begin
     if OpenDialog.Execute then
       result := OpenDialog.FileName;
-  end
-  else
-  begin
+  end else begin
     if SaveDialog.Execute then
       result := SaveDialog.FileName;
   end;
@@ -262,9 +260,17 @@ begin
   begin
     if OpenDialog.Execute then
       result := OpenDialog.FileName;
-  end
-  else
+  end else begin
+    if SaveDialog.Execute then
+      result := SaveDialog.FileName;
+  end;
+{$ENDIF}
+{$IFDEF LINUX}
+  if Load then
   begin
+    if OpenDialog.Execute then
+      result := OpenDialog.FileName;
+  end else begin
     if SaveDialog.Execute then
       result := SaveDialog.FileName;
   end;
