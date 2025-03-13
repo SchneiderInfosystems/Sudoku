@@ -3,7 +3,7 @@
 
 ## Introduction 
 
-This is a Delphi learning project prepared for Delphi 10.4 Sydney. This application is prepared to run on Windows 32/64, and on MacOS 64, and on Android and on iOS devices. 
+This is a Delphi learning project prepared for Delphi 12.3 Athens. This application is prepared to run on Windows 32/64, and on MacOS 64, and on Linux64 for Intel/AMD, and on Android and on iOS devices. 
 
 Thanks to the integrated half-solver, all 3 rules are continuously checked during input and only those digits are automatically available that do not cause rule conflicts.
 
@@ -11,18 +11,16 @@ Since December 2020, a full solver based on the backtracking algorithm has been 
 
 ## Precondition
 
-1. You can start with the Community Edition of Delphi. 
-See also https://www.embarcadero.com/products/delphi/starter/free-download 
+1. You can start with the Community Edition of Delphi. See also [www.embarcadero.com/products/delphi/starter/free-download](https://www.embarcadero.com/products/delphi/starter/free-download)
 
-2. You should be familiar with the rules of the math game sudoku.
-See also https://en.wikipedia.org/wiki/Sudoku
+2. You should be familiar with the rules of the math game sudoku. See also [en.wikipedia.org/wiki/Sudoku](https://en.wikipedia.org/wiki/Sudoku)
 
 ## Getting started
 1. Clone this repo;
 2. Open the project _Sudoku.dpr_ in the Delphi IDE;
 3. Press menu command Run in the Delphi IDE;
 
-![Start Form on Max](/InitialForm.png)
+![Start Form on Max](InitialForm.png)
 
 4. Click in a number field __(9)__ and select the first digit according to your first Sudoku example;
 5. Enter field by field until all of the predefined fields are filled out;
@@ -35,7 +33,7 @@ See also https://en.wikipedia.org/wiki/Sudoku
 12. With the button __Load__ you can restore the former game stage.
 13. If the half solver makes your Sudokus too easy, dare to load the ExpertExample.txt.
 
-![Sudoku Example](/Example.png)
+![Sudoku Example](Example.png)
 
 
 ## Hint for field visualzation
@@ -55,8 +53,11 @@ The algorithm searches for the number field with the smallest variability starti
 
 In the second step, the first available digit from this field is tentatively selected and checked if it does not trigger a rule violation in the half-solver. In case of a rule violation, the previous digit choice must be reversed. This digit must not be tried again in a next solver step.
 
-![Sudoku Example while auto solving](/AutoSolver.png)
+![Sudoku Example while auto solving](AutoSolver.png)
 
 The __Auto Solve__ button can be used to automatically repeat the solving steps until a final Suduko configuration is reached. Thereby the solving speed can be selected. A log informs about each solver step.
 
 Have fun solving Sudokus and understanding the backtracking algorithm.
+
+Christoph Schneider, Schneider Infosystems AG, Switzerland
+[www.schneider-infosys.ch](https://www.schneider-infosys.ch)
