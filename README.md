@@ -59,5 +59,5 @@ The __Auto Solve__ button can be used to automatically repeat the solving steps 
 
 Have fun solving Sudokus and understanding the backtracking algorithm.
 
-Christoph Schneider, Schneider Infosystems AG, Switzerland
-[www.schneider-infosys.ch](https://www.schneider-infosys.ch)
+Christoph Schneider, Schneider Infosystems AG, Switzerland<br>
+[schneider-infosys.ch](https://www.schneider-infosys.ch)
